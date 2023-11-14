@@ -2,9 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.vscode/
 
 # other files
 create_files.py
+proxies.txt
 
 # C extensions
 *.so

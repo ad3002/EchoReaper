@@ -12,9 +12,9 @@ from .get_proxies import get_proxies
 import logging
 from selenium.common.exceptions import WebDriverException
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(module)s %(asctime)s %(message)s')
 
-def get_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0):
+def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0):
     '''Get page source
     
     Args:
@@ -28,7 +28,7 @@ def get_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minim
         (str, str): url, page source
     '''
 
-    proxies = get_proxies() if use_proxy and def_proxy is None else []
+    proxies = get_proxies() if use_proxy and def_proxy is None else [None]
     proxy = random.choice(proxies) if proxies else def_proxy
 
     if verbose:

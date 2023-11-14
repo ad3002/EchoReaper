@@ -6,8 +6,11 @@
 # @contact: ad3002@gmail.com
 
 import re
-from connections import get_connection
+from .connections import get_connection
 from random import shuffle
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(module)s %(asctime)s %(message)s')
 
 PROXY_URL = "https://free-proxy-list.net/"
 
@@ -27,3 +30,4 @@ def update_proxies(proxy_url=PROXY_URL, file_name="proxies.txt"):
     driver.close()
     with open(file_name, "w") as fh:
         fh.write("\n".join(data))
+    logging.info(f"Proxies saved to {file_name}, proxies: {len(data)}")
