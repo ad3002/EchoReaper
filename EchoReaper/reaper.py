@@ -50,7 +50,7 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
                 page_source = get_page_source(driver, url, minimum_size=minimum_size, timeout=timeout)
                 yield url, page_source
                 break
-            except EmptyFileException as e:
+            except (EmptyFileException, TimeoutException, NoSuchWindowException, InvalidSessionIdException) as e:
                 if proxy != None:
                     proxies2errors[proxy] += 1
                     if str(e) == "Empty file" and proxies2errors[proxy] > 5:
@@ -70,43 +70,7 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
                         logging.info(f"Switched to proxy: {proxy}")
                 driver = get_connection(proxy, incognito=incognito, headless=headless)
                 attempts += 1
-            except TimeoutException:
-                driver.quit()
-                if proxy != None:
-                    proxy = random.choice(proxies) if proxies else None
-                    if proxy is None:
-                        logging.error("All proxies are banned")
-                        return
-                    proxies2errors[proxy] = 0
-                    if verbose:
-                        logging.info(f"Switched to proxy: {proxy}")
-                driver = get_connection(proxy, incognito=incognito, headless=headless)
-                attempts += 1
-            except NoSuchWindowException:
-                driver.quit()
-                if proxy != None:
-                    proxy = random.choice(proxies) if proxies else None
-                    if proxy is None:
-                        logging.error("All proxies are banned")
-                        return
-                    proxies2errors[proxy] = 0
-                    if verbose:
-                        logging.info(f"Switched to proxy: {proxy}")
-                driver = get_connection(proxy, incognito=incognito, headless=headless)
-                attempts += 1
-            except InvalidSessionIdException:
-                driver.quit()
-                if proxy != None:
-                    proxy = random.choice(proxies) if proxies else None
-                    if proxy is None:
-                        logging.error("All proxies are banned")
-                        return
-                    proxies2errors[proxy] = 0
-                    if verbose:
-                        logging.info(f"Switched to proxy: {proxy}")
-                driver = get_connection(proxy, incognito=incognito, headless=headless)
-                attempts += 1
-
+            
         task_id += 1
     if not proxies:
         logging.error("All proxies are banned")
