@@ -10,11 +10,11 @@ import random
 from .connections import get_connection, get_page_source, EmptyFileException
 from .get_proxies import get_proxies
 import logging
-from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchWindowException, InvalidSessionIdException
+from selenium.common.exceptions import TimeoutException, NoSuchWindowException, InvalidSessionIdException
 
 logging.basicConfig(level=logging.INFO, format='%(module)s %(asctime)s %(message)s')
 
-def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0, incognito=True, headless=True, timeout=15):
+def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0, incognito=True, headless=True, timeout=15, content=None):
     '''Get page source
     
     Args:
@@ -27,6 +27,12 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
     Yields:
         (str, str): url, page source
     '''
+
+    proxy = def_proxy
+    if use_proxy and def_proxy is None:
+        proxy_manager = ProxyManager()
+        proxy = proxy_manager.get_proxy()
+        
 
     proxies = get_proxies() if use_proxy and def_proxy is None else [None for _ in range(10)]
     proxy = random.choice(proxies) if proxies else def_proxy
@@ -48,6 +54,9 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
                 if verbose:
                     logging.info(f"Attempting to download: {url}")
                 page_source = get_page_source(driver, url, minimum_size=minimum_size, timeout=timeout)
+                if content is not None:
+                    if content not in page_source:
+                        raise EmptyFileException("Content not found")
                 yield url, page_source
                 break
             except (EmptyFileException, TimeoutException, NoSuchWindowException, InvalidSessionIdException) as e:
