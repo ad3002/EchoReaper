@@ -17,6 +17,9 @@ PROXY_URL = "https://free-proxy-list.net/"
 
 def get_proxies(file_name="proxies.txt"):
     '''Get proxies from file'''
+    if not os.path.isfile(file_name):
+        logging.error(f"Proxy file not found: {file_name}, updating proxies.")
+        update_proxies()
     with open(file_name) as fh:
         proxies = [x.strip() for x in fh if x.strip()]
     shuffle(proxies)
