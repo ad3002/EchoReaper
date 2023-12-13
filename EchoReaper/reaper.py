@@ -14,7 +14,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchWindowException, 
 
 logging.basicConfig(level=logging.INFO, format='%(module)s %(asctime)s %(message)s')
 
-def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0, incognito=True, headless=True, timeout=15, content=None):
+def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0, incognito=True, headless=True, timeout=15, has_token=None):
     '''Get page source
     
     Args:
@@ -29,9 +29,9 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
     '''
 
     proxy = def_proxy
-    if use_proxy and def_proxy is None:
-        proxy_manager = ProxyManager()
-        proxy = proxy_manager.get_proxy()
+    # if use_proxy and def_proxy is None:
+    #     proxy_manager = ProxyManager()
+    #     proxy = proxy_manager.get_proxy()
         
 
     proxies = get_proxies() if use_proxy and def_proxy is None else [None for _ in range(10)]
@@ -53,10 +53,13 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
             try:
                 if verbose:
                     logging.info(f"Attempting to download: {url}")
-                page_source = get_page_source(driver, url, minimum_size=minimum_size, timeout=timeout)
-                if content is not None:
-                    if content not in page_source:
-                        raise EmptyFileException("Content not found")
+                page_source = get_page_source(driver, url, timeout=timeout)
+                size = len(page_source)
+                if has_token is not None:
+                    if has_token not in page_source:
+                        raise EmptyFileException("Required token not found")
+                if size <= minimum_size:
+                    raise EmptyFileException("Empty file")
                 yield url, page_source
                 break
             except (EmptyFileException, TimeoutException, NoSuchWindowException, InvalidSessionIdException) as e:

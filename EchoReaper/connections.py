@@ -70,7 +70,7 @@ def run_with_timeout(func, args=(), kwargs={}, timeout=5):
         raise TimeoutException(f"Function {func.__name__} exceeded the time limit of {timeout} seconds")
 
 
-def get_page_source(driver, url, minimum_size=0, timeout=15):
+def get_page_source(driver, url, timeout=15):
     '''Get page source'''
     driver.set_page_load_timeout(timeout)
     driver.set_script_timeout(timeout)
@@ -81,7 +81,4 @@ def get_page_source(driver, url, minimum_size=0, timeout=15):
         print("Timed out waiting for page to load")
         raise EmptyFileException("Empty file")
     page_source = driver.page_source
-    size = len(page_source)
-    if size <= minimum_size:
-        raise EmptyFileException("Empty file")
     return page_source
