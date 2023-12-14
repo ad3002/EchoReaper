@@ -14,7 +14,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchWindowException, 
 
 logging.basicConfig(level=logging.INFO, format='%(module)s %(asctime)s %(message)s')
 
-def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0, incognito=True, headless=True, timeout=15, has_token=None):
+def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, minimum_size=0, incognito=True, headless=True, timeout=15, has_token=None, stop_on_captcha=False):
     '''Get page source
     
     Args:
@@ -53,7 +53,7 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
             try:
                 if verbose:
                     logging.info(f"Attempting to download: {url}")
-                page_source = get_page_source(driver, url, timeout=timeout)
+                page_source = get_page_source(driver, url, timeout=timeout, stop_on_captcha=stop_on_captcha)
                 size = len(page_source)
                 if has_token is not None:
                     if has_token not in page_source:

@@ -52,6 +52,7 @@ def get_connection(proxy=None, advanced=False, incognito=True, headless=True):
                     incognito=incognito,
                     headless=headless,
                     proxy=proxy,
+                    pls="none",
                     )
     return driver
 
@@ -70,7 +71,7 @@ def run_with_timeout(func, args=(), kwargs={}, timeout=5):
         raise TimeoutException(f"Function {func.__name__} exceeded the time limit of {timeout} seconds")
 
 
-def get_page_source(driver, url, timeout=15):
+def get_page_source(driver, url, timeout=15, stop_on_captcha=False):
     '''Get page source'''
     driver.set_page_load_timeout(timeout)
     driver.set_script_timeout(timeout)
@@ -81,4 +82,10 @@ def get_page_source(driver, url, timeout=15):
         print("Timed out waiting for page to load")
         raise EmptyFileException("Empty file")
     page_source = driver.page_source
+    if stop_on_captcha:
+        if "recaptcha" in page_source.lower() or "Error 403 (Forbidden)" in page_source:
+            input("Captcha found, press enter to continue")
+            page_source = driver.page_source
+            print(page_source)
+            input("Captcha found, press enter to continue")
     return page_source
