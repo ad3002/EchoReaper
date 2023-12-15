@@ -9,7 +9,7 @@ from .connections import get_connection, get_page_source
 from .get_proxies import get_proxies, update_proxies
 from .reaper import iter_page_sources
 
-__version__ = "1.0.4"
+__version__ = "1.0.6"
 
 __all__ = ['get_connection', 
            'get_page_source', 

@@ -86,6 +86,4 @@ def get_page_source(driver, url, timeout=15, stop_on_captcha=False):
         if "recaptcha" in page_source.lower() or "Error 403 (Forbidden)" in page_source:
             input("Captcha found, press enter to continue")
             page_source = driver.page_source
-            print(page_source)
-            input("Captcha found, press enter to continue")
     return page_source
