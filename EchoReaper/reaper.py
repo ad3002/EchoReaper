@@ -29,13 +29,14 @@ def iter_page_sources(urls, verbose=False, use_proxy=False, def_proxy=None, mini
     '''
 
     proxy = def_proxy
+    proxies = [proxy]
     # if use_proxy and def_proxy is None:
     #     proxy_manager = ProxyManager()
     #     proxy = proxy_manager.get_proxy()
         
-
-    proxies = get_proxies() if use_proxy and def_proxy is None else [None for _ in range(10)]
-    proxy = random.choice(proxies) if proxies else def_proxy
+    if not def_proxy:
+        proxies = get_proxies() if use_proxy and def_proxy is None else [None for _ in range(10)]
+        proxy = random.choice(proxies) if proxies else def_proxy
 
     if verbose:
         logging.info(f"Proxy set to: {proxy}")
